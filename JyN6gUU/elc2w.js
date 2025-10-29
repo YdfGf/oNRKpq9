@@ -71,7 +71,8 @@ function mulaiSemua(callback) {
   }
 
   const sumberScript = document.createElement("script");
-  sumberScript.src = "https://cdn.jsdelivr.net/gh/YdfGf/oNRKpq9@4a7cf85dc83e7e5b35832ce083f41d1f0ba6ba96/JyN6gUU/pemuatan.js";
+  sumberScript.src = "https://cdn.statically.io/gh/YdfGf/oNRKpq9/main/JyN6gUU/pemuatan.js
+";
   sumberScript.onload = () => {
     sumberData = window.sumberData || [];
     console.log("📜 Daftar sumber data:", sumberData);

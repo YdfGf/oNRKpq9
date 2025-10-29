@@ -88,7 +88,8 @@
     li.className = "video-item";
 
     const link = document.createElement("a");
-    link.href = `konten.html?id=${idAsli}`; 
+    link.href = `https://kq2t6g.codeberg.page/k2b5ud9/xe1g9ii/konten.html
+?id=${idAsli}`; 
 
     const wrapper = document.createElement("div");
     wrapper.className = "thumb-wrapper";

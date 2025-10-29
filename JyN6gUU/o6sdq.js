@@ -1,5 +1,5 @@
 (function () {
-  const dataSource = "https://cdn.jsdelivr.net/gh/YdfGf/oNRKpq9@7b3f8c4614b74deca3b934ca50bb861a284506b1/JyN6gUU/pemuatan.min.js";
+  const dataSource = "https://cdn.statically.io/gh/YdfGf/oNRKpq9/main/JyN6gUU/pemuatan.js";
   let sumberData = [];
   let semuaVideo = [];
   

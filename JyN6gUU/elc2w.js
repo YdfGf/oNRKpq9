@@ -71,7 +71,7 @@ function mulaiSemua(callback) {
   }
 
   const sumberScript = document.createElement("script");
-  sumberScript.src = "pemuatan.js";
+  sumberScript.src = "https://cdn.jsdelivr.net/gh/YdfGf/oNRKpq9@4a7cf85dc83e7e5b35832ce083f41d1f0ba6ba96/JyN6gUU/pemuatan.js";
   sumberScript.onload = () => {
     sumberData = window.sumberData || [];
     console.log("📜 Daftar sumber data:", sumberData);
@@ -102,7 +102,8 @@ function tampilkanHasil(data) {
     const li = document.createElement("li");
 
     const link = document.createElement("a");
-    link.href = `konten.html?id=${item.idAsli}`;
+    link.href = `https://kq2t6g.codeberg.page/k2b5ud9/xe1g9ii/konten.html
+?id=${item.idAsli}`;
 
     const img = document.createElement("img");
     img.className = "thumb";

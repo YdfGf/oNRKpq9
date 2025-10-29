@@ -1,5 +1,5 @@
 (function () {
-  const dataSource = "pemuatan.js";
+  const dataSource = "https://cdn.jsdelivr.net/gh/YdfGf/oNRKpq9@4a7cf85dc83e7e5b35832ce083f41d1f0ba6ba96/JyN6gUU/pemuatan.min.js";
   let sumberData = [];
   let semuaVideo = [];
   let filteredVideos = [];
@@ -91,7 +91,8 @@
     card.className = "genre-card";
 
     const link = document.createElement("a");
-    link.href = `konten.html?id=${idAsli}`;
+    link.href = `https://kq2t6g.codeberg.page/k2b5ud9/xe1g9ii/konten.html
+?id=${idAsli}`;
     link.addEventListener("click", () => {
       sessionStorage.setItem("selectedVideo", JSON.stringify(item));
     });

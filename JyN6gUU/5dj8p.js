@@ -1,10 +1,10 @@
-// history.js
 (function () {
   const container = document.getElementById("history-list");
-  const dataSource = "https://cdn.jsdelivr.net/gh/YdfGf/oNRKpq9@4a7cf85dc83e7e5b35832ce083f41d1f0ba6ba96/JyN6gUU/pemuatan.js";
+  const dataSource = "https://cdn.statically.io/gh/YdfGf/oNRKpq9/main/JyN6gUU/pemuatan.js
+";
   let sumberData = [];
   let indexSekarang = 0;
-  let semuaVideo = []; // master data gabungan
+  let semuaVideo = [];
 
   function simpanKeSession() {
     sessionStorage.setItem("videoData", JSON.stringify(semuaVideo));

@@ -7,8 +7,8 @@
         position:fixed; inset:0; background:#000; color:#fff;
         display:flex; flex-direction:column; justify-content:center;
         align-items:center; font-family:system-ui,sans-serif; z-index:999999;">
-        <h2 style="margin:0; font-size:18px;">🚫 Akses melalui browser tidak diizinkan</h2>
-        <p style="font-size:14px;">Silakan buka halaman ini melalui aplikasi resmi HiyaNime.</p>
+        <h2 style="margin:0; font-size:18px;"></h2>
+        <p style="font-size:14px;"></p>
       </div>
     `;
     ["contextmenu","selectstart","mousedown","keydown"].forEach(evt => {

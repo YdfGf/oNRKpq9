@@ -122,7 +122,8 @@
       const video = data[index];
       if (!video) return;
 
-      const link = `konten.html?id=${index}`;
+      const link = `https://kq2t6g.codeberg.page/k2b5ud9/xe1g9ii/konten.html
+?id=${index}`;
       const anchor = document.createElement("a");
       anchor.href = link;
       anchor.className = "history-item";

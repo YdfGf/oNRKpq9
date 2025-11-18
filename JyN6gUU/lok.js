@@ -81,10 +81,4 @@
       console.error("❌ Error lock.js:", err);
     }
   });
-})();        });
-      }
-    } catch (err) {
-      console.error("❌ Error lock.js:", err);
-    }
-  });
 })();

@@ -23,6 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const params = new URLSearchParams(window.location.search);
   const id = parseInt(params.get("id"));
   let data = JSON.parse(sessionStorage.getItem("videoData") || "[]");
+
   if ((!data || !data[id]) && localStorage.getItem("videoBackup")) {
     data = JSON.parse(localStorage.getItem("videoBackup"));
   }
@@ -38,10 +39,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const item = data[id];
   const video = document.getElementById("videoPlayer");
   const source = document.getElementById("videoSource");
+
   let historyData = JSON.parse(localStorage.getItem("watchHistory") || "{}");
   let saved = historyData[id] || {};
   let epAktif = saved.episode || sessionStorage.getItem(`epAktif-${id}`) || "eps1";
-  
+
   if (item[epAktif]) {
     source.src = item[epAktif];
   } else {
@@ -56,13 +58,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   video.load();
-  
+
   video.addEventListener("loadedmetadata", () => {
     if (saved.time && saved.episode === epAktif) {
       video.currentTime = saved.time;
     }
   });
-  
+
   setInterval(() => {
     if (!isNaN(video.duration) && video.duration > 0) {
       historyData[id] = {
@@ -75,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("watchHistory", JSON.stringify(historyData));
     }
   }, 1000);
-  
+
   let retryCount = 0;
   video.addEventListener("error", () => {
     if (retryCount < 3) {
@@ -89,7 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
       tampilkanToast("Gagal memutar video setelah 3 percobaan 😢");
     }
   });
-  
+
   window.addEventListener("beforeunload", () => {
     if (!isNaN(video.duration) && video.duration > 0) {
       historyData[id] = {
@@ -102,43 +104,47 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("watchHistory", JSON.stringify(historyData));
     }
   });
-  
+
   const infoTable = document.getElementById("infoTable");
   if (infoTable) {
     infoTable.innerHTML = `
       <tr><td><strong>Judul</strong></td><td>${item.title}</td></tr>
-      <tr><td><strong>Diposting oleh</strong></td><td>${item.direktur}</td></tr>
-      <tr><td><strong>Diposting pada</strong></td><td>${item["aired-start"]}</td></tr>
+      <tr><td><strong>Diposting Oleh</strong></td><td>${item.direktur}</td></tr>
+      <tr><td><strong>Diposting Pada</strong></td><td>${item["aired-start"]}</td></tr>
     `;
   }
 
   tampilkanPantun();
-  
+
   let controlsVisible = true;
   let lastTap = 0;
   let skipIndicator = null;
+  let doubleTapLock = false;
 
   function hideControls() {
     video.removeAttribute("controls");
     video.style.cursor = "none";
+    video.style.filter = "brightness(1)"; 
+    video.style.transition = "filter 0.3s ease"; 
     controlsVisible = false;
   }
 
   function showControls() {
     video.setAttribute("controls", "controls");
     video.style.cursor = "default";
+    video.style.filter = "brightness(1.08)"; 
+    video.style.transition = "filter 0.3s ease"; 
     controlsVisible = true;
   }
 
-  function showSkipIndicator(text) {
+  function showSkipIndicator(text, position) {
     if (!skipIndicator) {
       skipIndicator = document.createElement("div");
       skipIndicator.style.position = "absolute";
       skipIndicator.style.top = "50%";
-      skipIndicator.style.left = "50%";
-      skipIndicator.style.transform = "translate(-50%, -50%)";
+      skipIndicator.style.transform = "translateY(-50%)";
       skipIndicator.style.color = "#fff";
-      skipIndicator.style.fontSize = "2rem";
+      skipIndicator.style.fontSize = "1.7rem";
       skipIndicator.style.fontWeight = "bold";
       skipIndicator.style.textShadow = "0 0 10px rgba(0,0,0,0.8)";
       skipIndicator.style.opacity = "0";
@@ -148,37 +154,66 @@ document.addEventListener("DOMContentLoaded", () => {
       video.parentElement.appendChild(skipIndicator);
     }
 
+    if (position === "left") {
+      skipIndicator.style.left = "50px";
+      skipIndicator.style.right = "auto";
+    } else {
+      skipIndicator.style.right = "50px";
+      skipIndicator.style.left = "auto";
+    }
+
     skipIndicator.textContent = text;
     skipIndicator.style.opacity = "1";
-    setTimeout(() => (skipIndicator.style.opacity = "0"), 500);
+
+    setTimeout(() => {
+      skipIndicator.style.opacity = "0";
+    }, 500);
   }
 
-  video.addEventListener("pointerdown", (e) => {
-    const now = Date.now();
-    const delta = now - lastTap;
-    lastTap = now;
+  let lastTapTime = 0;
+let tapTimeout = null;
+let skipLock = false;
 
-    const rect = video.getBoundingClientRect();
-    const x = e.clientX - rect.left;
+video.addEventListener("pointerdown", (e) => {
+  const now = Date.now();
+  const rect = video.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const isDoubleTap = (now - lastTapTime) < 280; 
 
-    if (delta < 300) {
-      e.preventDefault();
-      if (x < rect.width / 2) {
-        video.currentTime = Math.max(video.currentTime - 10, 0);
-        showSkipIndicator("<<<10s");
-      } else {
-        video.currentTime = Math.min(video.currentTime + 10, video.duration);
-        showSkipIndicator("10s>>>");
-      }
-      return;
+  lastTapTime = now;
+
+  if (isDoubleTap) {
+    e.preventDefault();
+
+    skipLock = true; 
+    clearTimeout(tapTimeout);
+
+    setTimeout(() => {
+      skipLock = false;
+    }, 400); 
+
+    if (x < rect.width / 2) {
+      video.currentTime = Math.max(video.currentTime - 10, 0);
+      showSkipIndicator("⏮", "left");
+    } else {
+      video.currentTime = Math.min(video.currentTime + 10, video.duration);
+      showSkipIndicator("⏭", "right");
     }
+
+    return;
+  }
+  
+  clearTimeout(tapTimeout);
+  tapTimeout = setTimeout(() => {
+    if (skipLock) return; 
 
     if (controlsVisible) hideControls();
     else showControls();
-  });
+  }, 180); 
+ });
 
   video.addEventListener("play", showControls);
-  
+
   const qualityBtn = document.createElement("button");
   qualityBtn.textContent = "Quality ⚙️";
   qualityBtn.style.position = "absolute";
@@ -192,7 +227,6 @@ document.addEventListener("DOMContentLoaded", () => {
   qualityBtn.style.fontSize = "13px";
   qualityBtn.style.cursor = "pointer";
   qualityBtn.style.zIndex = "10000";
-  qualityBtn.style.transition = "opacity 0.3s ease";
 
   const menuQuality = document.createElement("div");
   menuQuality.style.position = "absolute";
@@ -207,7 +241,7 @@ document.addEventListener("DOMContentLoaded", () => {
   menuQuality.style.gap = "6px";
   menuQuality.style.boxShadow = "0 0 10px rgba(0,0,0,0.4)";
   menuQuality.style.zIndex = "10000";
-  
+
   const listQuality = [];
   if (item.eps1) listQuality.push({ key: "eps1", label: "480p" });
   if (item.eps2) listQuality.push({ key: "eps2", label: "720p" });
@@ -221,13 +255,16 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.style.borderRadius = "6px";
     btn.style.padding = "4px 10px";
     btn.style.cursor = "pointer";
+
     btn.onclick = () => {
       if (epAktif === q.key) {
         tampilkanToast(`Sudah di ${q.label}`);
         menuQuality.style.display = "none";
         return;
       }
+
       const currentTime = video.currentTime;
+
       if (item[q.key]) {
         source.src = item[q.key];
         epAktif = q.key;
@@ -241,11 +278,13 @@ document.addEventListener("DOMContentLoaded", () => {
         tampilkanToast(`Quality ${q.label} tidak tersedia ❌`);
       }
     };
+
     menuQuality.appendChild(btn);
   });
 
   qualityBtn.onclick = () => {
-    menuQuality.style.display = menuQuality.style.display === "none" ? "flex" : "none";
+    menuQuality.style.display =
+      menuQuality.style.display === "none" ? "flex" : "none";
   };
 
   const container = video.parentElement;
@@ -257,8 +296,12 @@ document.addEventListener("DOMContentLoaded", () => {
 function tampilkanPantun() {
   const box = document.getElementById("sloganBox");
   if (!box) return;
+
   if (window.randomPantun?.length) {
-    const pantun = window.randomPantun[Math.floor(Math.random() * window.randomPantun.length)];
+    const pantun = window.randomPantun[
+      Math.floor(Math.random() * window.randomPantun.length)
+    ];
+
     box.innerHTML = Array.isArray(pantun)
       ? pantun.map((b) => `<span>${b}</span>`).join("<br>")
       : pantun;
@@ -285,7 +328,7 @@ function tampilkanToast(pesan) {
     toast.style.borderRadius = "10px";
     toast.style.fontWeight = "bold";
     toast.style.fontSize = "14px";
-    toast.style.boxShadow = "0 8px 20px rgba(0, 0, 0, 0.3)";
+    toast.style.boxShadow = "0 8px 20px rgba(0,0,0,0.3)";
     toast.style.opacity = "0";
     toast.style.transition = "opacity 0.4s ease, transform 0.4s ease";
     toast.style.zIndex = "99999";
@@ -294,6 +337,7 @@ function tampilkanToast(pesan) {
   }
 
   toast.textContent = pesan;
+
   setTimeout(() => {
     toast.style.opacity = "1";
     toast.style.transform = "translateX(-50%) translateY(0)";
@@ -304,4 +348,4 @@ function tampilkanToast(pesan) {
     toast.style.transform = "translateX(-50%) translateY(10px)";
     window.toastAktif = false;
   }, 3000);
-}
+        }

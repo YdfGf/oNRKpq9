@@ -20,16 +20,13 @@
   
   document.addEventListener("DOMContentLoaded", () => {
     const path = window.location.pathname;
-    const skipPages = [
-      "/search",
-     "/search.html",
-     "/konten",
-     "/konten.html"
-   ];
 
-    const isSkip = skipPages.some(p => path === p);
-
+    // === FIX SKIP SYSTEM ===
+    // Bebaskan halaman search & konten (Cloudflare-compatible)
+    const skipPages = ["search", "konten"];
+    const isSkip = skipPages.some(p => path.includes(p));
     if (isSkip) return;
+    // ========================
 
     try {
       const kode = new URLSearchParams(window.location.search).get("ufg");

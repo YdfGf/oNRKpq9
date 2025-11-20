@@ -20,9 +20,15 @@
   
   document.addEventListener("DOMContentLoaded", () => {
     const path = window.location.pathname;
-    const skipPages = ["/search.html", "/konten.html"]; 
-    const isSkip = skipPages.some(p => path.endsWith(p));
-    
+    const skipPages = [
+      "/search",
+     "/search.html",
+     "/konten",
+     "/konten.html"
+   ];
+
+    const isSkip = skipPages.some(p => path === p);
+
     if (isSkip) return;
 
     try {
